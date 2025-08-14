@@ -1,0 +1,33 @@
+# Include the README and license files
+include README.md
+include LICENSE
+include SECURITY.md
+include CODE_OF_CONDUCT.md
+include SUPPORT.md
+
+# Include all configuration files
+include pyproject.toml
+
+# Include examples
+recursive-include examples *.py
+recursive-include examples *.json
+recursive-include examples *.md
+
+# Include tests (optional, for source distributions)
+recursive-include tests *.py
+
+# Include GitHub workflows (for source distributions)
+recursive-include .github *.yml
+recursive-include .github *.yaml
+
+# Exclude certain files
+exclude .gitignore
+exclude *.pyc
+exclude .DS_Store
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .git*
+global-exclude .coverage
+global-exclude *.so

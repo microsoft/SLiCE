@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slice-score"
+version = "0.1.0"
+description = "Schema Lineage Composite Evaluation - A Python package for evaluating schema lineage extraction accuracy"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Jackie Jiaqi Yin", email = "jackie.yin@microsoft.com"},
+    {name = "Yi-Wei Chen", email = "yiweichen@microsoft.com"}
+]
+maintainers = [
+    {name = "Jackie Jiaqi Yin", email = "jackie.yin@microsoft.com"},
+    {name = "Yi-Wei Chen", email = "yiweichen@microsoft.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["schema", "lineage", "evaluation", "data-pipeline", "nlp", "ast"]
+requires-python = ">=3.8"
+dependencies = [
+    "fuzzywuzzy~=0.18.0",
+    "python-Levenshtein~=0.27.0", 
+    "nltk~=3.9.0",
+    "tree-sitter~=0.21.3",
+    "tree-sitter-languages~=1.10.2",
+    "numpy>=1.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=22.0",
+    "isort>=5.0",
+    "flake8>=5.0",
+    "mypy>=1.0",
+]
+docs = [
+    "sphinx>=5.0",
+    "sphinx-rtd-theme>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/microsoft/SLiCE"
+Repository = "https://github.com/microsoft/SLiCE"
+Documentation = "https://slice-score.readthedocs.io/"
+Issues = "https://github.com/microsoft/SLiCE/issues"
+
+[project.scripts]
+slice-score = "slice.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["slice*"]
+
+[tool.setuptools.package-data]
+slice = ["*.txt", "*.md"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
