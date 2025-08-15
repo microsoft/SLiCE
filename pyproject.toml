@@ -9,8 +9,7 @@ description = "Schema Lineage Composite Evaluation - A Python package for evalua
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Jackie Jiaqi Yin", email = "jackie.yin@microsoft.com"},
-    {name = "Yi-Wei Chen", email = "yiweichen@microsoft.com"}
+    {name = "Jackie Jiaqi Yin", email = "jackie.yin@microsoft.com"}
 ]
 maintainers = [
     {name = "Jackie Jiaqi Yin", email = "jackie.yin@microsoft.com"},
@@ -23,7 +22,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -32,7 +30,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords = ["schema", "lineage", "evaluation", "data-pipeline", "nlp", "ast"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "fuzzywuzzy~=0.18.0",
     "python-Levenshtein~=0.27.0", 
@@ -40,6 +38,7 @@ dependencies = [
     "tree-sitter~=0.21.3",
     "tree-sitter-languages~=1.10.2",
     "numpy>=1.26.0",
+    "pandas>=2.3.0"
 ]
 
 [project.optional-dependencies]
@@ -63,7 +62,7 @@ Documentation = "https://slice-score.readthedocs.io/"
 Issues = "https://github.com/microsoft/SLiCE/issues"
 
 [project.scripts]
-slice-score = "slice.cli:main"
+slice-eval = "slice.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["slice*"]
@@ -85,9 +84,13 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore:Language.*is deprecated:FutureWarning",
+    "ignore::FutureWarning:tree_sitter"
+]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

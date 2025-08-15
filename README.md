@@ -1,10 +1,11 @@
 # SLiCE: Schema Lineage Composite Evaluation
 
-[![PyPI version](https://badge.fury.io/py/slice-lineage.svg)](https://badge.fury.io/py/slice-lineage)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://badge.fury.io/py/slice-score.svg)](https://badge.fury.io/py/slice-score)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Paper: ArXiv](https://img.shields.io/badge/Paper-ArXiv-red.svg)](https://arxiv.org/abs/2508.07179)
 
-SLiCE is a Python package for evaluating schema lineage extraction accuracy by comparing model predictions with gold standards. It provides comprehensive metrics for assessing the quality of schema lineage extraction in data pipeline analysis.
+SLiCE is a Python package for evaluating schema lineage extraction accuracy by comparing model predictions with gold standards. It provides comprehensive metrics for assessing the quality of schema lineage extraction in data pipeline analysis. 
 
 ## Features
 
@@ -12,6 +13,7 @@ SLiCE is a Python package for evaluating schema lineage extraction accuracy by c
 - **Multiple Similarity Metrics**: BLEU scores, fuzzy matching, F1 scores, and AST-based similarity
 - **Flexible Weighting**: Customizable weights for different components and metrics
 - **Multi-language Support**: Handles Python, SQL, and C# code in transformations
+- **Sample Data Module**: Built-in access to curated datasets for testing and demonstration
 - **Batch Processing**: Parallel evaluation of multiple lineage pairs
 - **Command Line Interface**: Easy-to-use CLI for quick evaluations
 
@@ -33,10 +35,17 @@ pip install -e .
 
 ### Development Installation
 
+For development with all testing and linting tools:
+
 ```bash
 git clone https://github.com/microsoft/SLiCE.git
 cd SLiCE
+
+# Using pip
 pip install -e ".[dev]"
+
+# Using uv (recommended - faster)
+uv sync --extra dev
 ```
 
 ## Quick Start
@@ -173,14 +182,24 @@ See the `examples/` directory for complete usage examples:
 Run the test suite:
 
 ```bash
-# Install dev dependencies
+# Using pip
 pip install -e ".[dev]"
-
-# Run tests
 pytest
 
+# Using uv (recommended)
+uv sync --extra dev
+uv run pytest
+
 # Run with coverage
-pytest --cov=slice
+uv run pytest --cov=slice
+
+# Run specific test file
+uv run pytest tests/test_schema_lineage_evaluator.py -v
+
+# Code quality checks
+uv run black slice/ tests/     # Format code
+uv run flake8 slice/           # Lint code  
+uv run mypy slice/             # Type checking
 ```
 
 ## Contributing
@@ -205,16 +224,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you use SLiCE in your research, please cite:
 
 ```bibtex
-@software{slice2024,
-  title={SLiCE: Schema Lineage Calculation and Evaluation},
-  author={Your Name},
-  year={2024},
-  url={https://github.com/yourusername/SLiCE}
+@software{slice2025,
+  title={SLiCE: Schema Lineage Composite Evaluation},
+  author={Jiaqi Yin and Yi-Wei Chen and Meng-Lung Lee and Xiya Liu},
+  year={2025},
+  url={https://github.com/microsoft/SLiCE}
+}
+
+@misc{yin2025schemalineageextractionscale,
+      title={Schema Lineage Extraction at Scale: Multilingual Pipelines, Composite Evaluation, and Language-Model Benchmarks}, 
+      author={Jiaqi Yin and Yi-Wei Chen and Meng-Lung Lee and Xiya Liu},
+      year={2025},
+      eprint={2508.07179},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2508.07179}, 
 }
 ```
 
 ## Support
 
 - **Documentation**: [Link to documentation]
-- **Issues**: [GitHub Issues](https://github.com/yourusername/SLiCE/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/SLiCE/discussions)
+- **Issues**: [GitHub Issues](https://github.com/microsoft/SLiCE/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/microsoft/SLiCE/discussions)

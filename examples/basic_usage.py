@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SLiCE: Schema Lineage Calculation and Evaluation
+SLiCE: Schema Lineage Composite Evaluation
 Main demonstration script for calculating schema lineage accuracy using default settings.
 
 This script demonstrates how to use the SchemaLineageEvaluator to calculate accuracy
@@ -13,7 +13,7 @@ def main():
     """
     Demonstrate schema lineage accuracy calculation using default settings.
     """
-    print("=== SLiCE: Schema Lineage Calculation and Evaluation ===")
+    print("=== SLiCE: Schema Lineage Composite Evaluation ===")
     print("Demonstrating schema lineage accuracy calculation with default settings.\n")
     
     # Initialize evaluator with default settings

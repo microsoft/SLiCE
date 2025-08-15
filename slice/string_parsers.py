@@ -48,7 +48,7 @@ def parse_entity_names(entity_string: str, delimiters: List[str]=[',', ';']) -> 
     
     return entities
 
-def remove_special_characters(string, 
+def remove_special_characters(string: str, 
                             chars_to_remove: List[str],
                             replace_char: Optional[str]='_') -> str:
     """

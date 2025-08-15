@@ -7,7 +7,6 @@ from collections import Counter
 import math
 import re
 import warnings
-warnings.filterwarnings("ignore", category=FutureWarning, module="tree_sitter")
 
 
 def calc_fuzzy_match_score(str1: str, str2: str):
@@ -128,7 +127,8 @@ def calc_bleu_score(predicted: str,
         score = sentence_bleu(references, predicted_tokens, weights=weights, smoothing_function=smoothing)
         return score
     except Exception as e:
-        print(f"Error calculating BLEU score: {e}")
+        import logging
+        logging.warning(f"Error calculating BLEU score: {e}")
         return 0.0
 
 
@@ -599,7 +599,6 @@ class ASTCalculator:
             parser = self._get_parser(lang)
         except Exception as e:
             raise ValueError(f"Failed to get parser for language '{lang}': {str(e)}")
-            return 0.0
         
         # clean code formatting
         predicted = clean_code_formatting(predicted)
@@ -611,7 +610,6 @@ class ASTCalculator:
             truth_tree = parser.parse(bytes(truth, 'utf8')).root_node
         except Exception as e:
             raise ValueError(f"Failed to parse code for language '{lang}': {str(e)}")
-            return 0.0
 
         # extract sub trees
         predicted_sub_tree = self._get_all_sub_trees(predicted_tree)

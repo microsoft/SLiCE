@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Command-line interface for SLiCE (Schema Lineage Calculation and Evaluation).
+Command-line interface for SLiCE (Schema Lineage Composite Evaluation).
 """
 
 import argparse
@@ -55,7 +55,7 @@ def format_results(results: Dict[str, float]) -> str:
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="SLiCE: Schema Lineage Calculation and Evaluation",
+        description="SLiCE: Schema Lineage Composite Evaluation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

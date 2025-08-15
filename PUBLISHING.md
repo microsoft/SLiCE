@@ -16,7 +16,7 @@ This document provides comprehensive instructions for publishing the SLiCE packa
 1. **Configure PyPI Trusted Publishing**:
    - Go to [PyPI Publishing Settings](https://pypi.org/manage/account/publishing/)
    - Add a new trusted publisher with:
-     - PyPI project name: `slice-lineage`
+     - PyPI project name: `slice-score`
      - Owner: `yourusername`
      - Repository name: `SLiCE`
      - Workflow filename: `publish.yml`
@@ -50,26 +50,30 @@ Alternatively, create releases through GitHub UI:
 ### Initial Setup
 
 ```bash
-# Install build and publishing tools
+# Using pip
 pip install build twine
-
-# Install the package in development mode
 pip install -e ".[dev]"
+
+# Using uv (recommended - faster)
+uv sync --extra dev
 ```
 
 ### Testing Before Publishing
 
 ```bash
-# Run all tests
+# Using pip
 pytest tests/ -v
-
-# Check code quality
 black --check slice tests examples
 isort --check-only slice tests examples
 flake8 slice
-
-# Test CLI
 slice-eval --help
+
+# Using uv (recommended)
+uv run pytest tests/ -v
+uv run black --check slice tests examples
+uv run isort --check-only slice tests examples  
+uv run flake8 slice
+uv run slice-eval --help
 ```
 
 ### Build the Package
@@ -92,7 +96,7 @@ twine check dist/*
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 # Test installation from Test PyPI
-pip install --index-url https://test.pypi.org/simple/ slice-lineage
+pip install --index-url https://test.pypi.org/simple/ slice-score
 
 # Test the installed package
 python -c "import slice; print('Import successful')"
@@ -106,7 +110,7 @@ slice-eval --version
 twine upload dist/*
 
 # Verify on PyPI
-pip install slice-lineage
+pip install slice-score
 ```
 
 ## Version Management
@@ -211,11 +215,11 @@ Before each release:
 
 1. **Verify Installation**:
    ```bash
-   pip install slice-lineage
+   pip install slice-score
    python -c "import slice; print('Success')"
    ```
 
-2. **Check PyPI Page**: Visit [pypi.org/project/slice-lineage/](https://pypi.org/project/slice-lineage/)
+2. **Check PyPI Page**: Visit [pypi.org/project/slice-score/](https://pypi.org/project/slice-score/)
 
 3. **Monitor Downloads**: Use tools like [pypistats](https://pypistats.org/)
 
@@ -226,8 +230,8 @@ Before each release:
 pip install pypistats
 
 # View download statistics
-pypistats recent slice-lineage
-pypistats overall slice-lineage
+pypistats recent slice-score
+pypistats overall slice-score
 ```
 
 ## Security Best Practices

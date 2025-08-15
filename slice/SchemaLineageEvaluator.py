@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Dict, Optional, List, Set
 from fuzzywuzzy import fuzz
 from dataclasses import dataclass
@@ -9,7 +10,7 @@ from slice.eval import (calc_fuzzy_match_score,
                             ASTCalculator,
                             clean_code_formatting)
 from slice.string_parsers import parse_entity_names
-from slice.constants import LineageComponents, ScoreComponents
+from slice.constants import LineageComponents, ScoreComponents, EvaluationDefaults
 import numpy as np
 from slice.SYNTAX import PYTHON_SYNTAX, SQL_SYNTAX, KEYWORDS, PYTHON_OPERATORS, SQL_OPERATORS, CSHARP_SYNTAX, CSHARP_OPERATORS
 
@@ -30,10 +31,10 @@ class SchemaLineageEvaluator:
     def __init__(self, 
                  weights: Dict[str, float]=None,
                  has_metadata: bool=False,
-                 source_table_weights={'f1': 0.7, 'fuzzy': 0.3},
-                 transformation_weights={'bleu': 0.5, 'weighted_bleu': 0.3, 'ast': 0.2},
-                 aggregation_weights={'bleu': 0.5, 'weighted_bleu': 0.3, 'ast': 0.2},
-                 metadata_weights={'bleu': 0.5, 'weighted_bleu': 0.3, 'ast': 0.2},
+                 source_table_weights: Dict[str, float]=None,
+                 transformation_weights: Dict[str, float]=None,
+                 aggregation_weights: Dict[str, float]=None,
+                 metadata_weights: Dict[str, float]=None,
                  keywords=KEYWORDS,
                  sql_syntax=SQL_SYNTAX,
                  python_syntax=PYTHON_SYNTAX,
@@ -104,11 +105,11 @@ class SchemaLineageEvaluator:
         self.has_metadata = has_metadata
         self.weights = weights or self._get_default_weights()
 
-        # assign hyperparameters
-        self.source_table_weights = source_table_weights
-        self.transformation_weights = transformation_weights
-        self.aggregation_weights = aggregation_weights
-        self.metadata_weights = metadata_weights
+        # assign hyperparameters with defaults from constants
+        self.source_table_weights = source_table_weights or EvaluationDefaults.DEFAULT_SOURCE_TABLE_WEIGHTS
+        self.transformation_weights = transformation_weights or EvaluationDefaults.DEFAULT_TEXT_SIMILARITY_WEIGHTS
+        self.aggregation_weights = aggregation_weights or EvaluationDefaults.DEFAULT_TEXT_SIMILARITY_WEIGHTS
+        self.metadata_weights = metadata_weights or EvaluationDefaults.DEFAULT_TEXT_SIMILARITY_WEIGHTS
 
         # validate parameters
         self._validate_parameters()
@@ -143,7 +144,7 @@ class SchemaLineageEvaluator:
         Validate the lineage.
         """
         if not isinstance(lineage, dict):
-            print(f"Lineage is not a dictionary: {lineage}")
+            logging.warning(f"Lineage is not a dictionary: {lineage}")
             return False
         
         if self.has_metadata:
@@ -156,10 +157,10 @@ class SchemaLineageEvaluator:
         
         for attr in required_attrs:
             if attr not in lineage:
-                print(f"Missing attribute: {attr}")
+                logging.warning(f"Missing attribute: {attr}")
                 return False
             if not isinstance(lineage[attr], str):
-                print(f"Attribute {attr} is not a string or is empty: {lineage[attr]}")
+                logging.warning(f"Attribute {attr} is not a string or is empty: {lineage[attr]}")
                 return False
         return True
     
@@ -185,42 +186,36 @@ class SchemaLineageEvaluator:
             if len(self.weights) != 3:
                 raise ValueError("Weights must have 3 components: source_tables, transformation, aggregation")
         
+        # Use tolerance for floating-point comparison
+        tolerance = 1e-9
+        
         sum_weights = sum(self.weights.values())
-        if sum_weights != 1.0:
+        if abs(sum_weights - 1.0) > tolerance:
             raise ValueError(f"Weights must sum to 1.0, but got {sum_weights}")
         
         sum_source_table_weights = sum(self.source_table_weights.values())
-        if sum_source_table_weights != 1.0:
+        if abs(sum_source_table_weights - 1.0) > tolerance:
             raise ValueError(f"Source table weights must sum to 1.0, but got {sum_source_table_weights}")
         
         sum_transformation_weights = sum(self.transformation_weights.values())
-        if sum_transformation_weights != 1.0:
+        if abs(sum_transformation_weights - 1.0) > tolerance:
             raise ValueError(f"Transformation weights must sum to 1.0, but got {sum_transformation_weights}")
 
         sum_aggregation_weights = sum(self.aggregation_weights.values())
-        if sum_aggregation_weights != 1.0:
+        if abs(sum_aggregation_weights - 1.0) > tolerance:
             raise ValueError(f"Aggregation weights must sum to 1.0, but got {sum_aggregation_weights}")
 
         if self.has_metadata:
             sum_metadata_weights = sum(self.metadata_weights.values())  
-            if sum_metadata_weights != 1.0:
+            if abs(sum_metadata_weights - 1.0) > tolerance:
                 raise ValueError(f"Metadata weights must sum to 1.0, but got {sum_metadata_weights}")   
             
 
-    def _get_default_weights(self):
+    def _get_default_weights(self) -> Dict[str, float]:
         if self.has_metadata:
-            return {
-                LineageComponents.SOURCE_TABLE: 0.3,
-                LineageComponents.TRANSFORMATION: 0.3,
-                LineageComponents.AGGREGATION: 0.2,
-                LineageComponents.METADATA: 0.2
-            }
+            return EvaluationDefaults.DEFAULT_WEIGHTS_WITH_METADATA.copy()
         else:
-            return {
-                LineageComponents.SOURCE_TABLE: 0.4,
-                LineageComponents.TRANSFORMATION: 0.4,
-                LineageComponents.AGGREGATION: 0.2
-            }
+            return EvaluationDefaults.DEFAULT_WEIGHTS_WITHOUT_METADATA.copy()
 
     def evaluate(self, predicted_lineage: Dict[str, str],
                   gold_lineage: Dict[str, str]) -> Dict[str, float]:
@@ -255,7 +250,7 @@ class SchemaLineageEvaluator:
             gold_lineage_obj = self._turn_dict_to_lineage(gold_lineage)
         except ValueError as e:
             # If conversion fails, return with format=0 and overall=0
-            print(f"Error converting lineage: {e}")
+            logging.error(f"Error converting lineage: {e}")
             results['format'] = 0
             results['overall'] = 0
             return results
@@ -344,7 +339,7 @@ class SchemaLineageEvaluator:
             return results
         
         except Exception as e:
-            print(f"Error in parallel processing: {e}")
+            logging.warning(f"Error in parallel processing: {e}")
             # Fall back to sequential processing if parallel fails
             return [self.evaluate(pred, gold) for pred, gold in zip(predicted_lineage, gold_lineage)]
     

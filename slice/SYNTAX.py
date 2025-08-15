@@ -28,7 +28,7 @@ SQL_SYNTAX = {
 
 SQL_OPERATORS = {
     '<>', '<=', '>=', '||'
-    }
+}
 
 PYTHON_SYNTAX = {            
     # basic python syntax
@@ -59,7 +59,6 @@ PYTHON_OPERATORS = {
 KEYWORDS = {
         # SQL keywords
         'select', 'from', 'where', 'group', 'by', 'having', 'order', 'join',
-        'having', 'order', 'join',
         'inner', 'outer', 'left', 'right', 'on', 'union', 'all', 'insert',
         'update', 'delete', 'create', 'table', 'view', 'with', 'as', 'case',
         'when', 'then', 'else', 'end', 'distinct', 'between', 'like', 'in',

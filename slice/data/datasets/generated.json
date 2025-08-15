@@ -1,0 +1,201 @@
+{
+    "_metadata": "The following lineages are parsed from the generated results by Qwen2.5-32B-Code-Instruct, and the results are used for evaluation.",
+    "80963c21-378a-4d8d-e948-feeb9d74c049": {
+        "has_cot": true,
+        "has_few_shot": false,
+        "example_number": 1,
+        "difficulty": 3,
+        "parsed_lineages": {
+            "CustomerId": {
+                "source_schema": "customer_id",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet",
+                "transformation": "C.customer_id AS CustomerId",
+                "aggregation": ""
+                },
+            "FirstName": {
+                "source_schema": "first_name, customer_id",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet",
+                "transformation": "df_1.withColumn(\"first_name\", F.initcap(F.col(\"first_name\"))) <CODEEND> C.first_name AS FirstName",
+                "aggregation": ""
+                },
+            "LastName": {
+                "source_schema": "last_name, customer_id",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet",
+                "transformation": "df_2.withColumn(\"last_name\", F.initcap(F.col(\"last_name\"))) <CODEEND> C.last_name AS LastName",
+                "aggregation": ""
+                },
+            "IsPremiumMember": {
+                "source_schema": "is_premium_member",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet",
+                "transformation": "df_8.withColumn(\"is_premium_member\", F.when(F.lower(F.col(\"is_premium_member\")).isin(\"true\", \"1\", \"yes\"), F.lit(True)) .otherwise(F.lit(False))) <CODEEND> C.is_premium_member AS IsPremiumMember",
+                "aggregation": ""
+                },
+            "CustomerRegistrationDate": {
+                "source_schema": "registration_date, customer_id",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet",
+                "transformation": "df_6.withColumn(\"registration_date\", F.to_timestamp(F.col(\"registration_date\"))) <CODEEND> C.registration_date AS CustomerRegistrationDate",
+                "aggregation": ""
+                },
+            "AccountType": {
+                "source_schema": "account_type, customer_id, first_name, last_name, is_premium_member, registration_date, balance, credit_limit, opening_date, transaction_timestamp, transaction_type, status",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_transactions/transactions.parquet",
+                "transformation": "df_1.withColumn(\"account_type\", F.when(F.lower(F.col(\"account_type\")).isin(\"none\", \"unspecified\"), F.lit(\"Unspecified\")) .otherwise(F.initcap(F.col(\"account_type\")))) <CODEEND> A.account_type AS AccountType",
+                "aggregation": ""
+                },
+            "CurrentAccountBalance": {
+                "source_schema": "balance, customer_id, first_name, last_name, is_premium_member, registration_date, account_type, credit_limit, opening_date, amount, transaction_timestamp, transaction_type, status",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_transactions/transactions.parquet",
+                "transformation": "df.withColumn(\"balance\", F.col(\"balance\").cast(DecimalType(18, 2))) <CODEEND> df_0.withColumn(\"balance\", F.when(F.col(\"balance\").isNull() | (F.col(\"balance\") < 0), F.lit(0.00)) .otherwise(F.col(\"balance\"))) <CODEEND> A.balance AS CurrentAccountBalance",
+                "aggregation": ""
+                },
+            "AccountCreditLimit": {
+                "source_schema": "credit_limit, customer_id, first_name, last_name, is_premium_member, registration_date, account_type, balance, opening_date",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet",
+                "transformation": "df_6.withColumn(\"credit_limit\", F.col(\"credit_limit\").cast(DecimalType(18, 2))) <CODEEND> A.credit_limit AS AccountCreditLimit",
+                "aggregation": ""
+                },
+            "AccountOpeningDate": {
+                "source_schema": "opening_date",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet",
+                "transformation": "df_3.withColumn(\"opening_date\", F.to_date(F.col(\"opening_date\"))) <CODEEND> A.opening_date AS AccountOpeningDate",
+                "aggregation": ""
+                },
+            "TotalAmountSpent": {
+                "source_schema": "amount, customer_id, first_name, last_name, is_premium_member, registration_date, account_type, balance, credit_limit, opening_date, transaction_timestamp, transaction_type, status",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_transactions/transactions.parquet",
+                "transformation": "df_2.withColumn(\"amount\", F.col(\"amount\").cast(DecimalType(18, 2))) <CODEEND> df_3.withColumn(\"amount\", F.when(F.col(\"amount\").isNull(), F.lit(0.00)).otherwise(F.abs(F.col(\"amount\")))) <CODEEND> SUM(T.amount) AS TotalAmountSpent",
+                "aggregation": "SUM() GROUP BY C.customer_id, C.first_name, C.last_name, C.is_premium_member, C.registration_date, A.account_type, A.balance, A.credit_limit, A.opening_date"
+                },
+            "MonthlyTransactionCount": {
+                "source_schema": "transaction_id, customer_id, first_name, last_name, is_premium_member, registration_date, account_type, balance, credit_limit, opening_date, transaction_timestamp, transaction_type, status",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_transactions/transactions.parquet",
+                "transformation": "C.customer_id AS CustomerId <CODEEND> df_1.withColumn(\"first_name\", F.initcap(F.col(\"first_name\"))) <CODEEND> C.first_name AS FirstName <CODEEND> df_2.withColumn(\"last_name\", F.initcap(F.col(\"last_name\"))) <CODEEND> C.last_name AS LastName <CODEEND> df_8.withColumn(\"is_premium_member\", F.when(F.lower(F.col(\"is_premium_member\")).isin(\"true\", \"1\", \"yes\"), F.lit(True)) .otherwise(F.lit(False))) <CODEEND> C.is_premium_member AS IsPremiumMember <CODEEND> df_6.withColumn(\"registration_date\", F.to_timestamp(F.col(\"registration_date\"))) <CODEEND> C.registration_date AS CustomerRegistrationDate <CODEEND> df_1.withColumn(\"account_type\", F.when(F.lower(F.col(\"account_type\")).isin(\"none\", \"unspecified\"), F.lit(\"Unspecified\")) .otherwise(F.initcap(F.col(\"account_type\")))) <CODEEND> A.account_type AS AccountType <CODEEND> df.withColumn(\"balance\", F.col(\"balance\").cast(DecimalType(18, 2))) <CODEEND> df_0.withColumn(\"balance\", F.when(F.col(\"balance\").isNull() | (F.col(\"balance\") < 0), F.lit(0.00)) .otherwise(F.col(\"balance\"))) <CODEEND> A.balance AS CurrentAccountBalance <CODEEND> df_6.withColumn(\"credit_limit\", F.col(\"credit_limit\").cast(DecimalType(18, 2))) <CODEEND> A.credit_limit AS AccountCreditLimit <CODEEND> df_3.withColumn(\"opening_date\", F.to_date(F.col(\"opening_date\"))) <CODEEND> A.opening_date AS AccountOpeningDate <CODEEND> df_4.withColumn(\"transaction_type\", F.when(F.lower(F.col(\"transaction_type\")).isin(\"unknown\", \"none\"), F.lit(\"Other\")) .otherwise(F.initcap(F.col(\"transaction_type\")))) <CODEEND> df_5.withColumn(\"status\", F.initcap(F.col(\"status\"))) <CODEEND> df_0 = df.withColumn(\"transaction_timestamp\", F.to_timestamp(F.col(\"transaction_timestamp\"))) <CODEEND> df_2 = df_1.withColumn(\"transaction_timestamp\", F.when(F.col(\"transaction_timestamp\") > F.current_timestamp(), F.current_timestamp()) .otherwise(F.col(\"transaction_timestamp\"))) <CODEEND> COUNT(T.transaction_id) AS MonthlyTransactionCount",
+                "aggregation": "COUNT() GROUP BY C.customer_id, C.first_name, C.last_name, C.is_premium_member, C.registration_date, A.account_type, A.balance, A.credit_limit, A.opening_date"
+            },
+            "AverageMonthlyTransactionAmount": {
+                "source_schema": "amount, customer_id, first_name, last_name, is_premium_member, registration_date, account_type, balance, credit_limit, opening_date, transaction_timestamp, transaction_type, status",
+                "source_table": "abfss://bank@efgh.dfs.core.windows.net/raw_customers/customers.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_accounts/accounts.parquet; abfss://bank@efgh.dfs.core.windows.net/raw_transactions/transactions.parquet",
+                "transformation": "C.customer_id AS CustomerId <CODEEND> df_1.withColumn(\"first_name\", F.initcap(F.col(\"first_name\"))) <CODEEND> C.first_name AS FirstName <CODEEND> df_2.withColumn(\"last_name\", F.initcap(F.col(\"last_name\"))) <CODEEND> C.last_name AS LastName <CODEEND> df_8.withColumn(\"is_premium_member\", F.when(F.lower(F.col(\"is_premium_member\")).isin(\"true\", \"1\", \"yes\"), F.lit(True)) .otherwise(F.lit(False))) <CODEEND> C.is_premium_member AS IsPremiumMember <CODEEND> df_6.withColumn(\"registration_date\", F.to_timestamp(F.col(\"registration_date\"))) <CODEEND> C.registration_date AS CustomerRegistrationDate <CODEEND> df_1.withColumn(\"account_type\", F.when(F.lower(F.col(\"account_type\")).isin(\"none\", \"unspecified\"), F.lit(\"Unspecified\")) .otherwise(F.initcap(F.col(\"account_type\")))) <CODEEND> A.account_type AS AccountType <CODEEND> df.withColumn(\"balance\", F.col(\"balance\").cast(DecimalType(18, 2))) <CODEEND> df_0.withColumn(\"balance\", F.when(F.col(\"balance\").isNull() | (F.col(\"balance\") < 0), F.lit(0.00)) .otherwise(F.col(\"balance\"))) <CODEEND> A.balance AS CurrentAccountBalance <CODEEND> df_6.withColumn(\"credit_limit\", F.col(\"credit_limit\").cast(DecimalType(18, 2))) <CODEEND> A.credit_limit AS AccountCreditLimit <CODEEND> df_3.withColumn(\"opening_date\", F.to_date(F.col(\"opening_date\"))) <CODEEND> A.opening_date AS AccountOpeningDate <CODEEND> df_4.withColumn(\"transaction_type\", F.when(F.lower(F.col(\"transaction_type\")).isin(\"unknown\", \"none\"), F.lit(\"Other\")) .otherwise(F.initcap(F.col(\"transaction_type\")))) <CODEEND> df_5.withColumn(\"status\", F.initcap(F.col(\"status\"))) <CODEEND> df_0 = df.withColumn(\"transaction_timestamp\", F.to_timestamp(F.col(\"transaction_timestamp\"))) <CODEEND> df_2 = df_1.withColumn(\"transaction_timestamp\", F.when(F.col(\"transaction_timestamp\") > F.current_timestamp(), F.current_timestamp()) .otherwise(F.col(\"transaction_timestamp\"))) <CODEEND> df_3.withColumn(\"amount\", F.when(F.col(\"amount\").isNull(), F.lit(0.00)).otherwise(F.abs(F.col(\"amount\")))) <CODEEND> df_2.withColumn(\"amount\", F.col(\"amount\").cast(DecimalType(18, 2))) <CODEEND> AVG(T.amount) AS AverageMonthlyTransactionAmount",
+                "aggregation": "AVG() GROUP BY C.customer_id, C.first_name, C.last_name, C.is_premium_member, C.registration_date, A.account_type, A.balance, A.credit_limit, A.opening_date"
+                }
+        }
+    },
+    "13e29468-5adf-74ea-fbb0-baf181fa8a71":{
+        "has_cot": true,
+        "has_few_shot": false,
+        "example_number": 1,
+        "difficulty": 2,
+        "parsed_lineages": {
+            "RestaurantName": {
+              "source_schema": "restaurant_name",
+              "source_table": "string.Format(\"/shares/local/FoodDelivery/Restaurants/restaurants{0}.ss\", @startDate); #DECLARE startDate DateTime = DateTime.Today.AddDays(-1);",
+              "transformation": "",
+              "aggregation": ""
+            },
+            "CuisineType": {
+              "source_schema": "cuisine_type",
+              "source_table": "string.Format(\"/shares/local/FoodDelivery/Restaurants/restaurants{0}.ss\", @startDate); #DECLARE startDate DateTime = DateTime.Today.AddDays(-1);",
+              "transformation": "",
+              "aggregation": ""
+            },
+            "City": {
+              "source_schema": "city",
+              "source_table": "string.Format(\"/shares/local/FoodDelivery/Restaurants/restaurants{0}.ss\",@startDate); #DECLARE startDate DateTime = DateTime.Today.AddDays(-1);",
+              "transformation": "",
+              "aggregation": ""
+            },
+            "AverageRating": {
+              "source_schema": "average_rating",
+              "source_table": "string.Format(\"/shares/local/FoodDelivery/Restaurants/restaurants{0}.ss\", @startDate); #DECLARE startDate DateTime = DateTime.Today.AddDays(-1);",
+              "transformation": "",
+              "aggregation": ""
+            },
+            "OrdersCount": {
+              "source_schema": "actual_delivery_timestamp, order_timestamp, order_id",
+              "source_table": "raw_Orders = (SSTREAM SPARSE STREAMSET @OrderPath PATTERN @OrderPattern RANGE __hour = [\"00\", \"23\"], __date = [ @startDate, @endDate]); #DECLARE OrderPath string = \"/shares/local/FoodDelivery/Orders\"; #DECLARE OrderPattern string = \"Order_%Y-%m-%d-%h.ss\"; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1); #DECLARE endDate DateTime = DateTime.Today;",
+              "transformation": "public static int MinutesBetween(DateTime start, DateTime end) { return (int)(end - start).TotalMinutes; } <CODEEND> IF((actual_delivery_timestamp != null) && (order_timestamp != null) && (MinutesBetween(order_timestamp, actual_delivery_timestamp) >= 0), 1, 0) AS HasValidDeliveryDuration <CODEEND> COUNT(BD.order_id) AS TotalValidDeliveredOrders",
+              "aggregation": "COUNT() GROUP BY BD.restaurant_id"
+            },
+            "AverageDeliveryTimeMinutes": {
+              "source_schema": "order_timestamp, actual_delivery_timestamp, restaurant_id, order_id",
+              "source_table": "raw_Orders = (SSTREAM SPARSE STREAMSET @OrderPath PATTERN @OrderPattern RANGE __hour = [\"00\", \"23\"], __date = [ @startDate, @endDate]); #DECLARE OrderPath string = @\"/shares/local/FoodDelivery/Orders\"; #DECLARE OrderPattern string = @\"Order_%Y-%m-%d-%h.ss\"; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1); #DECLARE endDate DateTime = DateTime.Today;",
+              "transformation": "public static int MinutesBetween(DateTime start, DateTime end) { return (int)(end - start).TotalMinutes; } <CODEEND> MinutesBetween(O.order_timestamp, O.actual_delivery_timestamp) AS DeliveryDurationMinutes <CODEEND> SUM(BD.DeliveryDurationMinutes) AS TotalDeliveryDurationMinutes <CODEEND> RDS.TotalDeliveryDurationMinutes.ToDouble() / RDS.TotalValidDeliveredOrders AS AverageDeliveryTimeMinutes",
+              "aggregation": "COUNT() GROUP BY BD.restaurant_id <CODEEND> SUM() GROUP BY BD.restaurant_id"
+            },
+            "OnTimeDeliveryRatePercent": {
+              "source_schema": "actual_delivery_timestamp, estimated_delivery_timestamp, order_timestamp, restaurant_id, order_id",
+              "source_table": "raw_Orders = (SSTREAM SPARSE STREAMSET @OrderPath PATTERN @OrderPattern RANGE __hour = [\"00\", \"23\"], __date = [ @startDate, @endDate]); #DECLARE OrderPath string = @\"/shares/local/FoodDelivery/Orders\"; #DECLARE OrderPattern string = @\"Order_%Y-%m-%d-%h.ss\"; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1); #DECLARE endDate DateTime = DateTime.Today;",
+              "transformation": "public static int MinutesBetween(DateTime start, DateTime end) { return (int)(end - start).TotalMinutes; } <CODEEND> IF((actual_delivery_timestamp != null) && (estimated_delivery_timestamp != null) && (MinutesBetween(order_timestamp, actual_delivery_timestamp) >= 0) && (actual_delivery_timestamp <= estimated_delivery_timestamp), 1, 0 ) AS IsOnTime <CODEEND> SUM(BD.IsOnTime) AS OnTimeOrdersCount <CODEEND> COUNT(BD.order_id) AS TotalValidDeliveredOrders <CODEEND> (RDS.OnTimeOrdersCount.ToDouble() * 100.0) / RDS.TotalValidDeliveredOrders AS OnTimeDeliveryRatePercent",
+              "aggregation": "COUNT() GROUP BY BD.restaurant_id <CODEEND> SUM() GROUP BY BD.restaurant_id"
+            },
+            "TotalRevenueGenerated": {
+              "source_schema": "order_total_amount, actual_delivery_timestamp, order_timestamp",
+              "source_table": "raw_Orders = (SSTREAM SPARSE STREAMSET @OrderPath PATTERN @OrderPattern RANGE __hour = [\"00\", \"23\"], __date = [ @startDate, @endDate]); #DECLARE OrderPath string = @\"/shares/local/FoodDelivery/Orders\"; #DECLARE OrderPattern string = @\"Order_%Y-%m-%d-%h.ss\"; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1); #DECLARE endDate DateTime = DateTime.Today;",
+              "transformation": "public static int MinutesBetween(DateTime start, DateTime end) { return (int)(end - start).TotalMinutes; } <CODEEND> IF((actual_delivery_timestamp != null) && (order_timestamp != null) && (MinutesBetween(order_timestamp, actual_delivery_timestamp) >= 0), 1, 0) AS HasValidDeliveryDuration <CODEEND> SUM(BD.order_total_amount) AS TotalRevenueGenerated",
+              "aggregation": "SUM() GROUP BY BD.restaurant_id"
+            },
+            "AverageOrderValue": {
+              "source_schema": "order_total_amount, actual_delivery_timestamp, order_timestamp, restaurant_id",
+              "source_table": "raw_Orders = (SSTREAM SPARSE STREAMSET @OrderPath PATTERN @OrderPattern RANGE __hour = [\"00\", \"23\"], __date = [ @startDate, @endDate]); #DECLARE OrderPath string = @\"/shares/local/FoodDelivery/Orders\"; #DECLARE OrderPattern string = @\"Order_%Y-%m-%d-%h.ss\"; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1); #DECLARE endDate DateTime = DateTime.Today;",
+              "transformation": "public static int MinutesBetween(DateTime start, DateTime end) { return (int)(end - start).TotalMinutes; } <CODEEND> IF((actual_delivery_timestamp != null) && (order_timestamp != null) && (MinutesBetween(order_timestamp, actual_delivery_timestamp) >= 0), 1, 0) AS HasValidDeliveryDuration <CODEEND> SUM(BD.order_total_amount) AS TotalRevenueGenerated <CODEEND> COUNT(BD.order_id) AS TotalValidDeliveredOrders <CODEEND> RDS.TotalRevenueGenerated.ToDouble() / RDS.TotalValidDeliveredOrders AS AverageOrderValue",
+              "aggregation": "COUNT() GROUP BY BD.restaurant_id <CODEEND> SUM() GROUP BY BD.restaurant_id"
+            },
+            "OnboardingAgeDays": {
+              "source_schema": "onboarding_date, restaurant_id",
+              "source_table": "\"/shares/local/FoodDelivery/Restaurants/restaurants{0}.ss\",@startDate; #DECLARE startDate DateTime = DateTime.Today.AddDays(-1);",
+              "transformation": "public static int DaysBetween(DateTime start, DateTime end) { if (start > end) { return 0; } else { return (int)(end - start).TotalDays; } } <CODEEND> DaysBetween(R.onboarding_date, @endDate) AS OnboardingAgeDays",
+              "aggregation": ""
+            }
+        }
+    },
+    "2f39b775-4662-bdd4-da67-ca510943b5ec":{
+        "has_cot": true,
+        "has_few_shot": false,
+        "example_number": 1,
+        "difficulty": 1,
+        "parsed_lineages": {
+            "MovieId": {
+              "source_schema": "movie_id",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "movie_id.ToLower() AS MovieId",
+              "aggregation": ""
+            },
+            "Title": {
+              "source_schema": "title",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "M.title AS Title",
+              "aggregation": ""
+            },
+            "ReleaseDate": {
+              "source_schema": "release_date",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "M.release_date AS ReleaseDate",
+              "aggregation": ""
+            },
+            "RuntimeMinutes": {
+              "source_schema": "runtime_minutes",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "M.runtime_minutes AS RuntimeMinutes",
+              "aggregation": ""
+            },
+            "Budget": {
+              "source_schema": "budget",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "M.budget AS Budget",
+              "aggregation": ""
+            },
+            "Language": {
+              "source_schema": "language",
+              "source_table": "#DECLARE movie_path string = @\"/local/user/movie.csv\";",
+              "transformation": "M.language AS Language",
+              "aggregation": ""
+            },
+            "ProducingStudio": {
+              "source_schema": "studio_name",
+              "source_table": "#DECLARE studio_path string = @\"/local/user/studio.csv\";",
+              "transformation": "S.studio_name AS ProducingStudio",
+              "aggregation": ""
+            }
+        }
+    }
+}
