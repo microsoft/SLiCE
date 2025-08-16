@@ -78,15 +78,15 @@ jobs:
         # Test CLI help
         slice-eval --help
         
-        # Create test files for CLI
-        echo '{"source_schema": "test", "source_table": "test", "transformation": "test", "aggregation": "test"}' > test_pred.json
-        echo '{"source_schema": "test", "source_table": "test", "transformation": "test", "aggregation": "test"}' > test_truth.json
+        # Create test files for CLI (cross-platform)
+        python -c "import json; open('test_pred.json', 'w').write(json.dumps({'source_schema': 'test', 'source_table': 'test', 'transformation': 'test', 'aggregation': 'test'}))"
+        python -c "import json; open('test_truth.json', 'w').write(json.dumps({'source_schema': 'test', 'source_table': 'test', 'transformation': 'test', 'aggregation': 'test'}))"
         
         # Test CLI evaluation
         slice-eval test_pred.json test_truth.json
         
-        # Clean up
-        rm test_pred.json test_truth.json
+        # Clean up (cross-platform)
+        python -c "import os; os.remove('test_pred.json'); os.remove('test_truth.json')"
 
   package-test:
     runs-on: ubuntu-latest
