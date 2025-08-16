@@ -32,6 +32,5 @@ jobs:
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        # Use trusted publishing (no API token required)
-        # Configure this in PyPI: https://pypi.org/manage/account/publishing/
+      # Use trusted publishing (no API token required)
+      # Configure this in PyPI: https://pypi.org/manage/account/publishing/
