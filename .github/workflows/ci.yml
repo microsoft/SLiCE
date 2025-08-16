@@ -86,7 +86,7 @@ jobs:
         slice-eval test_pred.json test_truth.json
         
         # Clean up
-        rm test_pred.json test_truth.json
+        Remove-Item test_pred.json, test_truth.json
 
   package-test:
     runs-on: ubuntu-latest
