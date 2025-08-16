@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "slice-score"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Schema Lineage Composite Evaluation - A Python package for evaluating schema lineage extraction accuracy"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -88,6 +88,9 @@ filterwarnings = [
     "ignore:Language.*is deprecated:FutureWarning",
     "ignore::FutureWarning:tree_sitter"
 ]
+
+[tool.setuptools_scm]
+# Configure version detection from git tags
 
 [tool.mypy]
 python_version = "3.9"

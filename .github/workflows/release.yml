@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
 
     steps:
     - uses: actions/checkout@v4
@@ -53,24 +54,20 @@ jobs:
         echo "pip install slice-score==$VERSION" >> release_notes.md
         echo "\`\`\`" >> release_notes.md
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Create Release with Assets
+      run: |
+        # Determine if this is a prerelease
+        if [[ "${{ github.ref_name }}" == *"-"* ]]; then
+          PRERELEASE_FLAG="--prerelease"
+        else
+          PRERELEASE_FLAG=""
+        fi
+        
+        # Create release with all built artifacts using GitHub CLI
+        gh release create ${{ github.ref_name }} \
+          --title "SLiCE ${{ steps.release_notes.outputs.VERSION }}" \
+          --notes-file release_notes.md \
+          $PRERELEASE_FLAG \
+          dist/*
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ steps.release_notes.outputs.VERSION }}
-        body_path: release_notes.md
-        draft: false
-        prerelease: ${{ contains(github.ref, '-') }}
-
-    - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/slice_score-${{ steps.release_notes.outputs.VERSION }}-py3-none-any.whl
-        asset_name: slice_score-${{ steps.release_notes.outputs.VERSION }}-py3-none-any.whl
-        asset_content_type: application/zip
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
