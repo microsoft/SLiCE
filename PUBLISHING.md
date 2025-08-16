@@ -17,7 +17,7 @@ This document provides comprehensive instructions for publishing the SLiCE packa
    - Go to [PyPI Publishing Settings](https://pypi.org/manage/account/publishing/)
    - Add a new trusted publisher with:
      - PyPI project name: `slice-score`
-     - Owner: `yourusername`
+     - Owner: `microsoft`
      - Repository name: `SLiCE`
      - Workflow filename: `publish.yml`
      - Environment name: `release`
@@ -131,14 +131,9 @@ Follow semantic versioning: `MAJOR.MINOR.PATCH`
    version = "0.2.0"
    ```
 
-2. **Update slice/__init__.py**:
-   ```python
-   __version__ = "0.2.0"
-   ```
-
-3. **Commit changes**:
+2. **Commit changes**:
    ```bash
-   git add pyproject.toml slice/__init__.py
+   git add pyproject.toml
    git commit -m "Bump version to v0.2.0"
    git tag v0.2.0
    git push origin main --tags

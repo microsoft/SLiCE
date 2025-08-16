@@ -50,7 +50,7 @@ jobs:
         echo "" >> release_notes.md
         echo "## Installation" >> release_notes.md
         echo "\`\`\`bash" >> release_notes.md
-        echo "pip install slice-lineage==$VERSION" >> release_notes.md
+        echo "pip install slice-score==$VERSION" >> release_notes.md
         echo "\`\`\`" >> release_notes.md
 
     - name: Create Release

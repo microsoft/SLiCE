@@ -176,6 +176,7 @@ See the `examples/` directory for complete usage examples:
 - `basic_usage.py`: Basic evaluation with default settings
 - `custom_weights.py`: Using custom weights and configurations
 - `batch_evaluation.py`: Processing multiple lineage pairs
+- `sample_data_usage.py`: Using package sample data for evaluation. 
 
 ## Testing
 

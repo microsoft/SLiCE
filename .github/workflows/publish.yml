@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: release
-      url: https://pypi.org/project/slice-lineage/
+      url: https://pypi.org/project/slice-score/
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
 
