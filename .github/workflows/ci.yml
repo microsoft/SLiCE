@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, 'release/*' ]
+    tags: [ 'v*' ]  # Also run on release candidate tags
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, 'release/*' ]
 
 jobs:
   test:
