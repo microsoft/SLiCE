@@ -1,6 +1,6 @@
 # SLiCE: Schema Lineage Composite Evaluation
 
-[![PyPI version](https://badge.fury.io/py/slice-score.svg)](https://badge.fury.io/py/slice-score)
+[![PyPI version](https://img.shields.io/pypi/v/slice-score.svg)](https://pypi.org/project/slice-score/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Paper: ArXiv](https://img.shields.io/badge/Paper-ArXiv-red.svg)](https://arxiv.org/abs/2508.07179)
